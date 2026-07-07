@@ -1846,3 +1846,28 @@ button {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Admin: service areas management */
+.area-add-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.area-add-row input[type='text'] {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font: inherit;
+  background: var(--paper);
+}
+.area-add-row input[type='text']:focus {
+  outline: 2px solid var(--green-600, #2d6a4f);
+  outline-offset: 1px;
+}
+.area-hint {
+  font-size: 0.85rem;
+  color: var(--ink-soft, #5a6b60);
+  margin-top: var(--sp-2);
+}

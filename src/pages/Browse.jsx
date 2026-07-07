@@ -13,6 +13,7 @@ export default function Browse() {
   const [search, setSearch] = useState('')
   const [catFilter, setCatFilter] = useState('all')
   const [areaFilter, setAreaFilter] = useState('all')
+  const [managedAreas, setManagedAreas] = useState([])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function Browse() {
       setLoading(true)
       setError('')
       try {
-        const [catRes, workerRes] = await Promise.all([
+        const [catRes, workerRes, areaRes] = await Promise.all([
           databases.listDocuments(DATABASE_ID, COLLECTIONS.categories, [
             Query.equal('active', true),
             Query.limit(50),
@@ -30,10 +31,14 @@ export default function Browse() {
             Query.equal('status', 'approved'),
             Query.limit(100),
           ]),
+          databases
+            .listDocuments(DATABASE_ID, COLLECTIONS.areas, [Query.limit(100), Query.orderAsc('name')])
+            .catch(() => ({ documents: [] })),
         ])
         if (!cancelled) {
           setCategories(catRes.documents)
           setWorkers(workerRes.documents)
+          setManagedAreas(areaRes.documents.map((d) => d.name))
         }
       } catch (e) {
         if (!cancelled) setError('Could not load workers right now. Please check your connection and try again.')
@@ -49,7 +54,10 @@ export default function Browse() {
   }, [])
 
   const catBySlug = useMemo(() => Object.fromEntries(categories.map((c) => [c.slug, c])), [categories])
-  const areas = useMemo(() => [...new Set(workers.map((w) => w.area).filter(Boolean))].sort(), [workers])
+  const areas = useMemo(() => {
+    if (managedAreas.length) return managedAreas
+    return [...new Set(workers.map((w) => w.area).filter(Boolean))].sort()
+  }, [managedAreas, workers])
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()

@@ -10,6 +10,7 @@ export const COLLECTIONS = {
   reviews: 'reviews',
   complaints: 'complaints',
   notifications: 'notifications',
+  areas: 'areas',
 }
 
 export const ADMIN_TEAM_ID = 'admins'

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
-import { databases, Query, DATABASE_ID, COLLECTIONS } from '../lib/appwrite'
+import { databases, ID, Query, DATABASE_ID, COLLECTIONS } from '../lib/appwrite'
 import { useApp } from '../context/AppContext'
 import CategoryIcon from '../components/CategoryIcon'
-import { Ban } from 'lucide-react'
+import { Ban, MapPin, Plus, X } from 'lucide-react'
 
 export default function Admin() {
   const { admin, authChecked } = useApp()
@@ -14,21 +14,25 @@ export default function Admin() {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [priceEdits, setPriceEdits] = useState({})
+  const [areas, setAreas] = useState([])
+  const [newArea, setNewArea] = useState('')
 
   const load = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      const [w, b, c, cat] = await Promise.all([
+      const [w, b, c, cat, ar] = await Promise.all([
         databases.listDocuments(DATABASE_ID, COLLECTIONS.workers, [Query.limit(200), Query.orderDesc('$createdAt')]),
         databases.listDocuments(DATABASE_ID, COLLECTIONS.bookings, [Query.limit(200), Query.orderDesc('$createdAt')]),
         databases.listDocuments(DATABASE_ID, COLLECTIONS.complaints, [Query.limit(200), Query.orderDesc('$createdAt')]),
         databases.listDocuments(DATABASE_ID, COLLECTIONS.categories, [Query.limit(50)]),
+        databases.listDocuments(DATABASE_ID, COLLECTIONS.areas, [Query.limit(100), Query.orderAsc('name')]),
       ])
       setWorkers(w.documents)
       setBookings(b.documents)
       setComplaints(c.documents)
       setCategories(cat.documents)
+      setAreas(ar.documents)
     } catch (e) {
       console.error(e)
       setError('Could not load admin data. Make sure you are a member of the admins team.')
@@ -80,6 +84,21 @@ export default function Admin() {
         priceUSD: Number(priceEdits[cat.$id]),
       })
     )
+
+  const addArea = () => {
+    const name = newArea.trim()
+    if (!name) return
+    if (areas.some((a) => a.name.toLowerCase() === name.toLowerCase())) {
+      setError('That area already exists.')
+      return
+    }
+    act(async () => {
+      await databases.createDocument(DATABASE_ID, COLLECTIONS.areas, ID.unique(), { name })
+      setNewArea('')
+    })
+  }
+
+  const removeArea = (a) => act(() => databases.deleteDocument(DATABASE_ID, COLLECTIONS.areas, a.$id))
 
   if (!authChecked) return <div className="state-msg">Loading…</div>
   if (!admin)
@@ -280,6 +299,43 @@ export default function Admin() {
                 </div>
               </div>
             ))}
+          </section>
+
+          <section className="admin-section">
+            <h3 className="section-title">Service Areas</h3>
+            <form
+              className="card admin-row area-add-row"
+              onSubmit={(e) => {
+                e.preventDefault()
+                addArea()
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Add a new area, e.g. Harare - Borrowdale"
+                value={newArea}
+                onChange={(e) => setNewArea(e.target.value)}
+                maxLength={128}
+              />
+              <button className="btn btn-primary" type="submit" disabled={busy || !newArea.trim()}>
+                <Plus className="icon" aria-hidden="true" /> Add area
+              </button>
+            </form>
+            {areas.map((a) => (
+              <div key={a.$id} className="card admin-row">
+                <div>
+                  <MapPin className="icon" aria-hidden="true" /> <strong>{a.name}</strong>
+                </div>
+                <button className="btn btn-small btn-danger" disabled={busy} onClick={() => removeArea(a)}>
+                  <X className="icon" aria-hidden="true" /> Remove
+                </button>
+              </div>
+            ))}
+            {areas.length === 0 && <div className="state-msg">No areas yet. Add the first one above.</div>}
+            <p className="area-hint">
+              Areas appear in the browse filter and the worker registration form. Removing an area does not affect
+              workers already registered in it.
+            </p>
           </section>
         </>
       )}

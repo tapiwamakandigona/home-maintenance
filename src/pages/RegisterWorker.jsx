@@ -4,7 +4,7 @@ import { databases, ID, Query, DATABASE_ID, COLLECTIONS } from '../lib/appwrite'
 import { useApp } from '../context/AppContext'
 import { CircleCheck, TriangleAlert } from 'lucide-react'
 
-const AREAS = [
+const FALLBACK_AREAS = [
   'Harare - Avondale',
   'Harare - Budiriro',
   'Harare - Glen View',
@@ -21,6 +21,7 @@ const AREAS = [
 export default function RegisterWorker() {
   const { user, refreshWorker } = useApp()
   const [categories, setCategories] = useState([])
+  const [areas, setAreas] = useState([])
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -40,6 +41,10 @@ export default function RegisterWorker() {
       .listDocuments(DATABASE_ID, COLLECTIONS.categories, [Query.equal('active', true), Query.limit(50)])
       .then((res) => setCategories(res.documents))
       .catch(() => setError('Could not load service categories. Please refresh.'))
+    databases
+      .listDocuments(DATABASE_ID, COLLECTIONS.areas, [Query.limit(100), Query.orderAsc('name')])
+      .then((res) => setAreas(res.documents.map((d) => d.name)))
+      .catch(() => {})
   }, [])
 
   function set(k, v) {
@@ -143,7 +148,7 @@ export default function RegisterWorker() {
             <label>Area / Location</label>
             <select required value={form.area} onChange={(e) => set('area', e.target.value)}>
               <option value="">Select area</option>
-              {AREAS.map((a) => (
+              {(areas.length ? areas : FALLBACK_AREAS).map((a) => (
                 <option key={a} value={a}>
                   {a}
                 </option>
