@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { databases, Query, DATABASE_ID, COLLECTIONS } from '../lib/appwrite'
 import { useApp } from '../context/AppContext'
+import CategoryIcon from '../components/CategoryIcon'
+import { Ban } from 'lucide-react'
 
 export default function Admin() {
   const { admin, authChecked } = useApp()
@@ -80,7 +82,12 @@ export default function Admin() {
     )
 
   if (!authChecked) return <div className="state-msg">Loading…</div>
-  if (!admin) return <div className="state-msg error">⛔ Admin access only.</div>
+  if (!admin)
+    return (
+      <div className="state-msg error">
+        <Ban className="icon" aria-hidden="true" /> Admin access only.
+      </div>
+    )
 
   const approvedWorkers = workers.filter((w) => w.status === 'approved')
   const pendingWorkers = workers.filter((w) => w.status === 'pending')
@@ -231,7 +238,7 @@ export default function Admin() {
           <section className="admin-section">
             <h3 className="section-title">Complaints Inbox</h3>
             {complaints.length === 0 ? (
-              <div className="state-msg">No complaints. 🎉</div>
+              <div className="state-msg">No complaints — all clear.</div>
             ) : (
               complaints.map((c) => (
                 <div key={c.$id} className="card admin-row">
@@ -256,7 +263,7 @@ export default function Admin() {
             {categories.map((cat) => (
               <div key={cat.$id} className="card admin-row">
                 <div>
-                  {cat.icon} <strong>{cat.name}</strong>
+                  <CategoryIcon category={cat} /> <strong>{cat.name}</strong>
                 </div>
                 <div className="btn-row">
                   <input

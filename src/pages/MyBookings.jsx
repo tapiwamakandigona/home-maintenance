@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { databases, ID, Query, DATABASE_ID, COLLECTIONS, userDocPermissions } from '../lib/appwrite'
 import Stars from '../components/Stars'
 import { useApp } from '../context/AppContext'
+import { Lock, UserRound, Banknote, Calendar, MapPin } from 'lucide-react'
 
 const STATUS_LABELS = {
   paid_escrow: 'Paid (Escrow)',
@@ -148,7 +149,8 @@ export default function MyBookings() {
     <div className="page">
       <h2 className="page-title">My Bookings</h2>
       <p className="escrow-rule notice notice-info">
-        🔒 Escrow rule: If no job is done within a day of payment, your money is returned.
+        <Lock className="icon" aria-hidden="true" /> Escrow rule: If no job is done within a day of payment, your
+        money is returned.
       </p>
       {msg && <div className="notice notice-info">{msg}</div>}
       {loading ? (
@@ -169,11 +171,22 @@ export default function MyBookings() {
               </div>
               <div className="booking-body">
                 <div>
-                  👷 <strong>{b.workerName}</strong> ({b.workerPhone})
+                  <UserRound className="icon" aria-hidden="true" />
+                  <strong>{b.workerName}</strong> ({b.workerPhone})
                 </div>
-                <div>💵 ${Number(b.amount).toFixed(2)}</div>
-                {b.scheduledTime && <div>🗓 {new Date(b.scheduledTime).toLocaleString()}</div>}
-                <div>📍 {b.address}</div>
+                <div>
+                  <Banknote className="icon" aria-hidden="true" />${Number(b.amount).toFixed(2)}
+                </div>
+                {b.scheduledTime && (
+                  <div>
+                    <Calendar className="icon" aria-hidden="true" />
+                    {new Date(b.scheduledTime).toLocaleString()}
+                  </div>
+                )}
+                <div>
+                  <MapPin className="icon" aria-hidden="true" />
+                  {b.address}
+                </div>
               </div>
               <div className="btn-row">
                 {(b.status === 'paid_escrow' || b.status === 'in_progress') && (

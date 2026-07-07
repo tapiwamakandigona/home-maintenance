@@ -1,10 +1,11 @@
 import { useState } from 'react'
+import { House, Search, Handshake } from 'lucide-react'
 
 const STEPS = [
-  { icon: '🏠', title: 'Welcome to Home Maintenance', body: '' },
-  { icon: '🔍', title: 'Find trusted local workers in Zimbabwe', body: '' },
+  { Icon: House, title: 'Welcome to Home Maintenance', body: '' },
+  { Icon: Search, title: 'Find trusted local workers in Zimbabwe', body: '' },
   {
-    icon: '🤝',
+    Icon: Handshake,
     title:
       'Connect with vetted grass cutters, maids, garden boys, tree fellers and more — right in your area',
     body: '',
@@ -14,15 +15,18 @@ const STEPS = [
 export default function Onboarding({ onDone }) {
   const [step, setStep] = useState(0)
   const last = step === STEPS.length - 1
+  const { Icon, title } = STEPS[step]
 
   return (
     <div className="onboarding">
       <button className="onboarding-skip" onClick={onDone}>
         Skip
       </button>
-      <div className="onboarding-card">
-        <div className="onboarding-icon">{STEPS[step].icon}</div>
-        <h2 className="onboarding-title">{STEPS[step].title}</h2>
+      <div className="onboarding-card" key={step}>
+        <div className="onboarding-icon">
+          <Icon className="icon" strokeWidth={1.5} aria-hidden="true" />
+        </div>
+        <h2 className="onboarding-title">{title}</h2>
       </div>
       <div className="onboarding-dots">
         {STEPS.map((_, i) => (

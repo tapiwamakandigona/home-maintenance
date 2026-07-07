@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { databases, ID, DATABASE_ID, COLLECTIONS, userDocPermissions } from '../lib/appwrite'
 import { useApp } from '../context/AppContext'
+import { MailCheck, MessageSquare } from 'lucide-react'
 
 export default function Complaints() {
   const { user, authChecked } = useApp()
@@ -47,7 +48,9 @@ export default function Complaints() {
     return (
       <div className="center-page">
         <div className="card confirm-card">
-          <div className="confirm-icon">📨</div>
+          <div className="confirm-icon">
+            <MailCheck className="icon" strokeWidth={1.75} aria-hidden="true" />
+          </div>
           <h2>Complaint Received</h2>
           <p>Thank you — our team will review it and get back to you.</p>
           <Link to="/" className="btn btn-primary">
@@ -79,7 +82,9 @@ export default function Complaints() {
   return (
     <div className="center-page">
       <div className="card form-card">
-        <h2 className="card-title">Submit a Complaint</h2>
+        <h2 className="card-title">
+          <MessageSquare className="icon" aria-hidden="true" /> Submit a Complaint
+        </h2>
         <form onSubmit={submit} className="form">
           <div className="field">
             <label>Your Name</label>

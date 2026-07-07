@@ -2,11 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { databases, Query, DATABASE_ID, COLLECTIONS } from '../lib/appwrite'
 import { useApp } from '../context/AppContext'
+import { Star, UserRound, MapPin, FileText, Calendar, Banknote } from 'lucide-react'
 
 const STATUS_LABELS = {
-  pending: '⏳ Pending admin review',
-  approved: '✅ Approved — live on the platform',
-  suspended: '🚫 Suspended',
+  pending: 'Pending admin review',
+  approved: 'Approved — live on the platform',
+  suspended: 'Suspended',
 }
 
 export default function WorkerDashboard() {
@@ -80,16 +81,19 @@ export default function WorkerDashboard() {
       <h2 className="page-title">Worker Dashboard</h2>
       <div className="card worker-profile-card">
         <h3>{myWorker.name}</h3>
-        <p>{STATUS_LABELS[myWorker.status] || myWorker.status}</p>
         <p>
-          ⭐ {myWorker.rating || 0} ({myWorker.ratingCount || 0} ratings) · {myWorker.jobsDone || 0} jobs done
+          <span className={'badge badge-' + myWorker.status}>{STATUS_LABELS[myWorker.status] || myWorker.status}</span>
+        </p>
+        <p>
+          <Star className="icon" aria-hidden="true" />
+          {myWorker.rating || 0} ({myWorker.ratingCount || 0} ratings) · {myWorker.jobsDone || 0} jobs done
         </p>
         <div className="btn-row">
           <button className="btn btn-primary" disabled={busy} onClick={toggleAvailable}>
             {myWorker.available ? 'Set as On a job' : 'Set as Available'}
           </button>
           <span className={'avail-dot ' + (myWorker.available ? 'on' : 'off')}>
-            ● {myWorker.available ? 'Available' : 'On a job'}
+            {myWorker.available ? 'Available' : 'On a job'}
           </span>
         </div>
       </div>
@@ -110,12 +114,28 @@ export default function WorkerDashboard() {
               </div>
               <div className="booking-body">
                 <div>
-                  🧑 <strong>{j.customerName}</strong> ({j.customerPhone})
+                  <UserRound className="icon" aria-hidden="true" />
+                  <strong>{j.customerName}</strong> ({j.customerPhone})
                 </div>
-                <div>📍 {j.address}</div>
-                {j.description && <div>📝 {j.description}</div>}
-                {j.scheduledTime && <div>🗓 {new Date(j.scheduledTime).toLocaleString()}</div>}
-                <div>💵 ${Number(j.amount).toFixed(2)}</div>
+                <div>
+                  <MapPin className="icon" aria-hidden="true" />
+                  {j.address}
+                </div>
+                {j.description && (
+                  <div>
+                    <FileText className="icon" aria-hidden="true" />
+                    {j.description}
+                  </div>
+                )}
+                {j.scheduledTime && (
+                  <div>
+                    <Calendar className="icon" aria-hidden="true" />
+                    {new Date(j.scheduledTime).toLocaleString()}
+                  </div>
+                )}
+                <div>
+                  <Banknote className="icon" aria-hidden="true" />${Number(j.amount).toFixed(2)}
+                </div>
               </div>
             </div>
           ))}

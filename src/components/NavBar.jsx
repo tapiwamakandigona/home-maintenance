@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
+import { House, Bell, Settings, LogOut } from 'lucide-react'
 
 export default function NavBar() {
   const { user, admin, myWorker, notifications, unreadCount, markAllRead, logout } = useApp()
@@ -31,7 +32,13 @@ export default function NavBar() {
     <header className="nav">
       <div className="nav-inner">
         <Link to="/" className="nav-brand">
-          <span className="nav-logo">🏠</span> Home Maintenance
+          <span className="nav-logo">
+            <House className="icon" strokeWidth={1.75} aria-hidden="true" />
+          </span>
+          <span className="nav-wordmark">
+            <strong>Home Maintenance</strong>
+            <small>Zimbabwe</small>
+          </span>
         </Link>
         <nav className="nav-actions">
           {user ? (
@@ -42,7 +49,8 @@ export default function NavBar() {
               {user && (
                 <div className="bell-wrap" ref={bellRef}>
                   <button className="nav-pill bell-btn" onClick={openBell} aria-label="Notifications">
-                    🔔{unreadCount > 0 && <span className="bell-badge">{unreadCount}</span>}
+                    <Bell className="icon" aria-hidden="true" />
+                    {unreadCount > 0 && <span className="bell-badge">{unreadCount}</span>}
                   </button>
                   {bellOpen && (
                     <div className="bell-dropdown">
@@ -64,7 +72,7 @@ export default function NavBar() {
               )}
               {admin && (
                 <Link to="/admin" className="nav-pill">
-                  ⚙️ Admin
+                  <Settings className="icon" aria-hidden="true" /> Admin
                 </Link>
               )}
               <Link to="/bookings" className="nav-pill">
@@ -76,7 +84,7 @@ export default function NavBar() {
                 </Link>
               )}
               <button className="nav-pill" onClick={handleLogout}>
-                Logout ({user.email})
+                <LogOut className="icon" aria-hidden="true" /> Logout ({user.email})
               </button>
             </>
           ) : (

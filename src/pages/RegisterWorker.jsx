@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { databases, ID, Query, DATABASE_ID, COLLECTIONS } from '../lib/appwrite'
 import { useApp } from '../context/AppContext'
+import { CircleCheck, TriangleAlert } from 'lucide-react'
 
 const AREAS = [
   'Harare - Avondale',
@@ -83,12 +84,17 @@ export default function RegisterWorker() {
     return (
       <div className="center-page">
         <div className="card confirm-card">
-          <div className="confirm-icon">✅</div>
+          <div className="confirm-icon">
+            <CircleCheck className="icon" strokeWidth={1.75} aria-hidden="true" />
+          </div>
           <h2>Registration Submitted!</h2>
           <p>
             Thank you, <strong>{form.name}</strong>. Your profile has been received.
           </p>
-          <p className="notice notice-warn">⚠️ Your profile will be reviewed by admin before going live.</p>
+          <p className="notice notice-warn">
+            <TriangleAlert className="icon" aria-hidden="true" /> Your profile will be reviewed by admin before
+            going live.
+          </p>
           <Link to="/" className="btn btn-primary">
             Back to Home
           </Link>
@@ -101,7 +107,10 @@ export default function RegisterWorker() {
     <div className="center-page">
       <div className="card form-card">
         <h2 className="card-title">Register as a Worker</h2>
-        <div className="notice notice-warn">⚠️ Your profile will be reviewed by admin before going live.</div>
+        <div className="notice notice-warn">
+          <TriangleAlert className="icon" aria-hidden="true" /> Your profile will be reviewed by admin before going
+          live.
+        </div>
         <form onSubmit={submit} className="form">
           <div className="field">
             <label>Full Name</label>
@@ -125,7 +134,7 @@ export default function RegisterWorker() {
               <option value="">Select category</option>
               {categories.map((c) => (
                 <option key={c.slug} value={c.slug}>
-                  {c.icon} {c.name}
+                  {c.name}
                 </option>
               ))}
             </select>

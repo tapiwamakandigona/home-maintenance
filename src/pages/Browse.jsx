@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { databases, Query, DATABASE_ID, COLLECTIONS } from '../lib/appwrite'
 import Stars from '../components/Stars'
+import CategoryIcon from '../components/CategoryIcon'
+import { Search, MapPin, ShieldCheck } from 'lucide-react'
 
 export default function Browse() {
   const [categories, setCategories] = useState([])
@@ -73,15 +75,21 @@ export default function Browse() {
   return (
     <div className="browse">
       <section className="hero">
+        <div className="hero-eyebrow">
+          <ShieldCheck className="icon" aria-hidden="true" /> Vetted workers · Zimbabwe
+        </div>
         <h1>Find Trusted Home Service Workers</h1>
         <p>Connect with skilled local professionals in Zimbabwe — right to your door.</p>
-        <input
-          className="hero-search"
-          type="search"
-          placeholder="🔍 Search by name, service or area…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        <div className="hero-search-wrap">
+          <Search className="icon" aria-hidden="true" />
+          <input
+            className="hero-search"
+            type="search"
+            placeholder="Search by name, service or area…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
       </section>
 
       <section className="stats-strip">
@@ -107,7 +115,7 @@ export default function Browse() {
               className={'chip' + (catFilter === c.slug ? ' active' : '')}
               onClick={() => setCatFilter(catFilter === c.slug ? 'all' : c.slug)}
             >
-              {c.icon} {c.name}
+              <CategoryIcon category={c} /> {c.name}
             </button>
           ))}
         </div>
@@ -139,22 +147,27 @@ export default function Browse() {
               return (
                 <article key={w.$id} className="worker-card">
                   <div className="worker-top">
-                    {w.photoUrl ? (
-                      <img className="worker-avatar-img" src={w.photoUrl} alt={w.name} />
-                    ) : (
-                      <div className="worker-avatar">{(w.name || '?')[0].toUpperCase()}</div>
-                    )}
+                    <div className="worker-avatar-wrap">
+                      {w.photoUrl ? (
+                        <img className="worker-avatar-img" src={w.photoUrl} alt={w.name} />
+                      ) : (
+                        <div className="worker-avatar">{(w.name || '?')[0].toUpperCase()}</div>
+                      )}
+                      <span className={'worker-avatar-dot ' + (w.available ? 'on' : 'off')} aria-hidden="true" />
+                    </div>
                     <span className="worker-cat-chip">
-                      {cat?.icon} {cat?.name || w.category}
+                      <CategoryIcon category={cat} /> {cat?.name || w.category}
                     </span>
                   </div>
                   <h3 className="worker-name">{w.name}</h3>
-                  <div className="worker-area">📍 {w.area}</div>
+                  <div className="worker-area">
+                    <MapPin className="icon" aria-hidden="true" /> {w.area}
+                  </div>
                   <Stars value={w.rating || 0} count={w.ratingCount || 0} />
                   <div className="worker-meta">
                     <span className="worker-price">{price != null ? `$${Number(price).toFixed(2)}` : '—'}</span>
                     <span className={'avail-dot ' + (w.available ? 'on' : 'off')}>
-                      ● {w.available ? 'Available' : 'On a job'}
+                      {w.available ? 'Available' : 'On a job'}
                     </span>
                   </div>
                   {w.bio && <p className="worker-bio">{w.bio}</p>}

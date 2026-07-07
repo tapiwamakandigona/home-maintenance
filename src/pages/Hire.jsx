@@ -12,6 +12,25 @@ import {
 import { PAYMENT_METHODS, simulatePayment } from '../lib/paynow'
 import { PLATFORM_FEE_RATE } from '../lib/config'
 import { useApp } from '../context/AppContext'
+import CategoryIcon from '../components/CategoryIcon'
+import {
+  PartyPopper,
+  Lock,
+  Mail,
+  CreditCard,
+  MapPin,
+  LocateFixed,
+  Smartphone,
+  Landmark,
+} from 'lucide-react'
+
+const METHOD_ICONS = {
+  ecocash: Smartphone,
+  onemoney: Smartphone,
+  telecash: Smartphone,
+  zipit: Landmark,
+  card: CreditCard,
+}
 
 export default function Hire() {
   const { workerId } = useParams()
@@ -214,7 +233,9 @@ export default function Hire() {
     return (
       <div className="center-page">
         <div className="card confirm-card">
-          <div className="confirm-icon">🎉</div>
+          <div className="confirm-icon">
+            <PartyPopper className="icon" strokeWidth={1.75} aria-hidden="true" />
+          </div>
           <h2>Booking Confirmed!</h2>
           <p>
             Your reference code is <strong className="ref-code">{booking.code}</strong>
@@ -222,9 +243,12 @@ export default function Hire() {
           <p>
             You hired <strong>{worker.name}</strong> for <strong>${amount.toFixed(2)}</strong>.
           </p>
-          <p className="notice notice-info">🔒 Funds held in escrow until you confirm the job is done.</p>
           <p className="notice notice-info">
-            📩 {worker.name} also receives an SMS backup with the job details (SMS gateway pending).
+            <Lock className="icon" aria-hidden="true" /> Funds held in escrow until you confirm the job is done.
+          </p>
+          <p className="notice notice-info">
+            <Mail className="icon" aria-hidden="true" /> {worker.name} also receives an SMS backup with the job
+            details (SMS gateway pending).
           </p>
           <div className="btn-row">
             <Link to="/bookings" className="btn btn-primary">
@@ -243,30 +267,35 @@ export default function Hire() {
     return (
       <div className="center-page">
         <div className="card form-card paynow-card">
-          <h2 className="card-title">💳 Pay via PayNow Zimbabwe</h2>
+          <h2 className="card-title">
+            <CreditCard className="icon" aria-hidden="true" /> Pay via PayNow Zimbabwe
+          </h2>
           <div className="pay-summary">
-            <div className="pay-flag">🇿🇼</div>
+            <div className="pay-flag">PayNow · Zimbabwe</div>
             <div>
               Hiring: <strong className="accent">{worker.name}</strong>
             </div>
             <div>
-              Amount due: <strong className="accent">${amount.toFixed(2)}</strong>
+              Amount due: <strong className="accent pay-amount">${amount.toFixed(2)}</strong>
             </div>
           </div>
           <form onSubmit={doPay} className="form">
             <div className="field">
               <label>Select Payment Method</label>
               <div className="method-grid">
-                {PAYMENT_METHODS.map((m) => (
-                  <button
-                    type="button"
-                    key={m.id}
-                    className={'method-btn' + (pay.method === m.id ? ' active' : '')}
-                    onClick={() => setPay((p) => ({ ...p, method: m.id }))}
-                  >
-                    {m.icon} {m.label}
-                  </button>
-                ))}
+                {PAYMENT_METHODS.map((m) => {
+                  const MethodIcon = METHOD_ICONS[m.id] || CreditCard
+                  return (
+                    <button
+                      type="button"
+                      key={m.id}
+                      className={'method-btn' + (pay.method === m.id ? ' active' : '')}
+                      onClick={() => setPay((p) => ({ ...p, method: m.id }))}
+                    >
+                      <MethodIcon className="icon" aria-hidden="true" /> {m.label}
+                    </button>
+                  )
+                })}
               </div>
             </div>
             <div className="field">
@@ -307,8 +336,8 @@ export default function Hire() {
       <div className="card form-card">
         <h2 className="card-title">Hire {worker.name}</h2>
         <p className="hire-sub">
-          {category?.icon} {category?.name || worker.category} · 📍 {worker.area} ·{' '}
-          <strong>${amount.toFixed(2)}</strong>
+          <CategoryIcon category={category} /> {category?.name || worker.category} ·{' '}
+          <MapPin className="icon" aria-hidden="true" /> {worker.area} · <strong>${amount.toFixed(2)}</strong>
         </p>
         <form onSubmit={toPayment} className="form">
           <div className="field">
@@ -320,7 +349,13 @@ export default function Hire() {
             <div className="gps-row">
               <input value={form.gps} onChange={(e) => set('gps', e.target.value)} placeholder="lat,lng" />
               <button type="button" className="btn btn-outline" onClick={useMyLocation} disabled={gpsBusy}>
-                {gpsBusy ? 'Locating…' : '📍 Use my location'}
+                {gpsBusy ? (
+                  'Locating…'
+                ) : (
+                  <>
+                    <LocateFixed className="icon" aria-hidden="true" /> Use my location
+                  </>
+                )}
               </button>
             </div>
           </div>
